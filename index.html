@@ -697,48 +697,9 @@
 
         .leaderboard-footer {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .file-action-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .btn-connect-file {
-            background: #10b981;
-            color: white;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-connect-file:hover {
-            background: #059669;
-            transform: translateY(-2px);
-        }
-
-        .btn-export {
-            background: #0284c7;
-            color: white;
-            padding: 10px 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-export:hover {
-            background: #0369a1;
-            transform: translateY(-2px);
+            margin-top: 12px;
         }
     </style>
 </head>
@@ -880,14 +841,6 @@
                 </div>
             </div>
             <div class="leaderboard-footer">
-                <div class="file-action-buttons">
-                    <button class="btn btn-connect-file" id="connectFileBtn" onclick="selectOrCreateLeaderboardFile()"
-                        title="Link your local leaderboard.json file directly">Link leaderboard.json</button>
-                    <button class="btn btn-export" onclick="exportLeaderboardFile()"
-                        title="Save leaderboard.json to your computer">Export to File</button>
-                    <input type="file" id="filePickerInput" accept=".json" style="display:none"
-                        onchange="handleFileInputChange(event)">
-                </div>
                 <button class="play-again" onclick="closeLeaderboard()">Close</button>
             </div>
         </div>
@@ -1188,58 +1141,6 @@
             : 'http://localhost:8000/api/leaderboard';
 
         let currentRunStats = null;
-        let fileHandle = null;
-
-        async function selectOrCreateLeaderboardFile() {
-            if ('showOpenFilePicker' in window) {
-                try {
-                    const [handle] = await window.showOpenFilePicker({
-                        types: [{
-                            description: 'JSON Files',
-                            accept: { 'application/json': ['.json'] }
-                        }],
-                        multiple: false
-                    });
-                    fileHandle = handle;
-                    const file = await fileHandle.getFile();
-                    const text = await file.text();
-                    let fileScores = [];
-                    try { fileScores = JSON.parse(text); } catch (e) { fileScores = []; }
-                    if (Array.isArray(fileScores)) {
-                        localStorage.setItem('ecocity_leaderboard', JSON.stringify(fileScores));
-                    }
-                    const connectBtn = document.getElementById('connectFileBtn');
-                    if (connectBtn) {
-                        connectBtn.textContent = '✓ Linked to ' + file.name;
-                        connectBtn.style.background = '#059669';
-                    }
-                    await refreshLeaderboardUI();
-                } catch (err) {
-                    if (err.name !== 'AbortError') {
-                        console.error('File picker error:', err);
-                    }
-                }
-            } else {
-                document.getElementById('filePickerInput')?.click();
-            }
-        }
-
-        async function handleFileInputChange(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const text = await file.text();
-            let fileScores = [];
-            try { fileScores = JSON.parse(text); } catch (e) { fileScores = []; }
-            if (Array.isArray(fileScores)) {
-                localStorage.setItem('ecocity_leaderboard', JSON.stringify(fileScores));
-                const connectBtn = document.getElementById('connectFileBtn');
-                if (connectBtn) {
-                    connectBtn.textContent = '✓ Loaded ' + file.name;
-                    connectBtn.style.background = '#059669';
-                }
-                await refreshLeaderboardUI();
-            }
-        }
 
         async function fetchLeaderboardFromSource() {
             // 1. Supabase Global Cloud Database (if configured)
@@ -1261,23 +1162,7 @@
                 }
             }
 
-            // 2. Direct file handle if linked
-            if (fileHandle) {
-                try {
-                    const file = await fileHandle.getFile();
-                    const text = await file.text();
-                    let fileScores = [];
-                    try { fileScores = JSON.parse(text); } catch (e) { fileScores = []; }
-                    if (Array.isArray(fileScores)) {
-                        localStorage.setItem('ecocity_leaderboard', JSON.stringify(fileScores));
-                        return { scores: fileScores, source: 'fileHandle', fileName: file.name };
-                    }
-                } catch (e) {
-                    console.warn('Could not read from fileHandle:', e);
-                }
-            }
-
-            // 3. Python server if running
+            // 2. Python server if running
             try {
                 const response = await fetch(API_URL, {
                     method: 'GET',
@@ -1294,7 +1179,7 @@
                 // Server not reachable
             }
 
-            // 4. Browser localStorage
+            // 3. Browser localStorage
             const local = localStorage.getItem('ecocity_leaderboard');
             let scores = [];
             if (local) {
@@ -1302,22 +1187,6 @@
                     scores = JSON.parse(local);
                 } catch (e) {
                     scores = [];
-                }
-            }
-
-            // 5. If localStorage is empty, try fetching static leaderboard.json (if running on http/localhost)
-            if (scores.length === 0) {
-                try {
-                    const staticRes = await fetch('./leaderboard.json');
-                    if (staticRes.ok) {
-                        const staticData = await staticRes.json();
-                        if (Array.isArray(staticData) && staticData.length > 0) {
-                            localStorage.setItem('ecocity_leaderboard', JSON.stringify(staticData));
-                            return { scores: staticData, source: 'fileHandle', fileName: 'leaderboard.json' };
-                        }
-                    }
-                } catch (e) {
-                    // Ignore if file protocol blocks fetch
                 }
             }
 
@@ -1359,26 +1228,7 @@
                 }
             }
 
-            // 2. Write directly to leaderboard.json via File System Access API if linked
-            if (fileHandle) {
-                try {
-                    const file = await fileHandle.getFile();
-                    const text = await file.text();
-                    let existingScores = [];
-                    try { existingScores = JSON.parse(text); } catch (e) { existingScores = []; }
-                    existingScores.push(newRecord);
-                    existingScores.sort((a, b) => (b.score || 0) - (a.score || 0));
-                    const writable = await fileHandle.createWritable();
-                    await writable.write(JSON.stringify(existingScores, null, 2));
-                    await writable.close();
-                    localStorage.setItem('ecocity_leaderboard', JSON.stringify(existingScores));
-                    return { savedDirectToFile: true, scores: existingScores, fileName: file.name };
-                } catch (err) {
-                    console.warn('Could not write directly to file handle:', err);
-                }
-            }
-
-            // 3. Python server if running
+            // 2. Python server if running
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -1396,7 +1246,7 @@
                 // Server offline
             }
 
-            // 4. LocalStorage persistence (always works without any server)
+            // 3. LocalStorage persistence (fallback)
             const local = localStorage.getItem('ecocity_leaderboard');
             let scores = [];
             if (local) {
@@ -1455,12 +1305,10 @@
             submitMsg.className = 'submit-message success';
             if (result.savedSupabase) {
                 submitMsg.textContent = '🌟 Score posted to the Global Leaderboard!';
-            } else if (result.savedDirectToFile) {
-                submitMsg.textContent = `Score saved directly into ${result.fileName || 'leaderboard.json'}!`;
             } else if (result.savedServer) {
-                submitMsg.textContent = 'Score saved permanently to leaderboard.json via server!';
+                submitMsg.textContent = 'Score saved to server!';
             } else {
-                submitMsg.textContent = 'Score saved in browser! (Link leaderboard.json anytime to sync to file)';
+                submitMsg.textContent = 'Score saved in browser storage!';
             }
 
             setTimeout(() => {
@@ -1480,7 +1328,7 @@
         }
 
         async function refreshLeaderboardUI() {
-            const { scores, source, fileName } = await fetchLeaderboardFromSource();
+            const { scores, source } = await fetchLeaderboardFromSource();
             const statusEl = document.getElementById('leaderboardStatus');
             const bodyEl = document.getElementById('leaderboardBody');
             const emptyEl = document.getElementById('emptyLeaderboard');
@@ -1488,12 +1336,10 @@
             if (statusEl) {
                 if (source === 'supabase') {
                     statusEl.innerHTML = '🌐 <strong>Global Leaderboard Active</strong> (Connected to Supabase Cloud)';
-                } else if (source === 'fileHandle') {
-                    statusEl.innerHTML = `Directly linked to <strong>${fileName || 'leaderboard.json'}</strong> (direct disk saving active)`;
                 } else if (source === 'server') {
-                    statusEl.innerHTML = 'Connected to Python server (saving to <strong>leaderboard.json</strong>)';
+                    statusEl.innerHTML = 'Connected to server';
                 } else {
-                    statusEl.innerHTML = 'Saved in browser storage. Click <strong>"Link leaderboard.json"</strong> to save directly to file on disk.';
+                    statusEl.innerHTML = 'Showing local high scores';
                 }
             }
 
@@ -1539,17 +1385,6 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
-        }
-
-        async function exportLeaderboardFile() {
-            const { scores } = await fetchLeaderboardFromSource();
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scores, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "leaderboard.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
         }
 
         function resetGame() {
