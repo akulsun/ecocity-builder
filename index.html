@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoCity Builder - Sustainable City Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
+            width: 100%;
+            padding: 24px 28px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            color: #2d5016;
+            font-size: 2.1em;
+            margin-bottom: 4px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .tagline {
+            color: #666;
+            font-size: 0.95em;
+            margin-bottom: 0;
+        }
+
+        /* Side-by-side Game Layout */
+        .game-layout {
+            display: grid;
+            grid-template-columns: minmax(460px, 570px) 1fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        .game-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-right {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            aspect-ratio: 1 / 1;
+            background: #f0f4f8;
+            padding: 14px;
+            border-radius: 18px;
+            border: 2px solid #e0e7ff;
+            margin-bottom: 12px;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.04);
+            user-select: none;
+            width: 100%;
+            max-width: 570px;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: #d4e8f1;
+            border: 2px solid #b0d4f1;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.6em;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .cell:hover:not(.occupied) {
+            background: #c0dfe8;
+            transform: scale(1.05);
+            border-color: #667eea;
+        }
+
+        .cell.occupied {
+            cursor: pointer;
+            border-color: #94a3b8;
+        }
+
+        .cell.occupied:hover {
+            transform: scale(1.05);
+            border-color: #ef4444;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
+        }
+
+        .cell.grass { background: #c8e6c9; border-color: #81c784; }
+        .cell.solar { background: #fff9c4; border-color: #fbc02d; }
+        .cell.wind { background: #e3f2fd; border-color: #42a5f5; }
+        .cell.forest { background: #a5d6a7; border-color: #2e7d32; }
+        .cell.farm { background: #ffccbc; border-color: #ff7043; }
+        .cell.house { background: #f8bbd0; border-color: #ec407a; }
+        .cell.factory { background: #b0bec5; border-color: #607d8b; }
+        .cell.water { background: #80deea; border-color: #00bcd4; }
+
+        .info-panel {
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            font-size: 0.85em;
+            line-height: 1.45;
+            color: #334155;
+        }
+
+        .info-panel p {
+            margin-bottom: 4px;
+        }
+
+        .info-panel p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Right Column Components */
+        .timer-card {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border: 2px solid #c7d2fe;
+            border-radius: 12px;
+            padding: 9px 16px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .timer {
+            font-size: 1.45em;
+            font-weight: 800;
+            color: #4338ca;
+            margin-bottom: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .stat {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 9px 12px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat.budget { border-left-color: #f59e0b; }
+        .stat.pollution { border-left-color: #ef4444; }
+        .stat.happiness { border-left-color: #10b981; }
+        .stat.sustainability { border-left-color: #3b82f6; }
+
+        .stat-label {
+            font-size: 0.82em;
+            color: #64748b;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        .sidebar-section-title {
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #64748b;
+            margin-bottom: 7px;
+        }
+
+        .building-controls {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .btn {
+            padding: 10px 8px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .btn-building {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: 2px solid transparent;
+        }
+
+        .btn-building:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-building:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .cost {
+            font-size: 0.75em;
+            opacity: 0.85;
+            margin-top: 2px;
+        }
+
+        .action-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.3fr;
+            gap: 8px;
+        }
+
+        .tutorial-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-top: 14px;
+            text-align: left;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+        }
+
+        .tutorial-header {
+            font-size: 0.82em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #4338ca;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tutorial-steps {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 0.82em;
+            line-height: 1.5;
+            color: #475569;
+        }
+
+        .tutorial-steps li {
+            margin-bottom: 5px;
+        }
+
+        .tutorial-steps li:last-child {
+            margin-bottom: 0;
+        }
+
+        .tutorial-steps strong {
+            color: #1e293b;
+        }
+
+        .btn-stop {
+            background: #e67e22;
+            color: white;
+        }
+
+        .btn-stop:hover {
+            background: #d35400;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(230, 126, 34, 0.4);
+        }
+
+        .btn-stop:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-leaderboard-nav {
+            background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
+            color: #2c3e50;
+        }
+
+        .btn-leaderboard-nav:hover {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
+        }
+
+        .btn-reset {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #ee5a52;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(238, 90, 82, 0.4);
+        }
+
+        @media (max-width: 940px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 16px;
+            }
+            .game-board {
+                max-width: 500px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .building-controls {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .building-controls {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .action-controls {
+                grid-template-columns: 1fr;
+            }
+            .cell {
+                font-size: 1.7em;
+            }
+        }
+
+        .info-panel p {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .game-over-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .game-over-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .modal-content h2 {
+            color: #2d5016;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+        }
+
+        .final-stats {
+            background: #f0f4f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .final-stats p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .play-again {
+            background: #51cf66;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .play-again:hover {
+            background: #40c057;
+        }
+
+        .submission-section {
+            background: #eef2ff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #c7d2fe;
+            text-align: left;
+        }
+
+        .submission-section h3 {
+            font-size: 1.1em;
+            color: #312e81;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid #c7d2fe;
+            border-radius: 8px;
+            font-size: 1em;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn-submit {
+            background: #4f46e5;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-message {
+            margin-top: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            min-height: 1.2em;
+        }
+
+        .submit-message.success { color: #16a34a; }
+        .submit-message.error { color: #dc2626; }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-view-leaderboard {
+            background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
+            color: #2c3e50;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view-leaderboard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+        }
+
+        .leaderboard-modal-content {
+            max-width: 650px;
+            width: 95%;
+            padding: 30px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .leaderboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .leaderboard-header h2 {
+            margin: 0;
+            font-size: 1.8em;
+            color: #1e3a8a;
+        }
+
+        .close-icon {
+            font-size: 2em;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: color 0.2s;
+            line-height: 1;
+            padding: 0 5px;
+        }
+
+        .close-icon:hover {
+            color: #1e293b;
+        }
+
+        .leaderboard-status {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-bottom: 12px;
+            text-align: left;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .table-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 350px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95em;
+        }
+
+        .leaderboard-table th {
+            background: #f1f5f9;
+            padding: 12px 14px;
+            color: #475569;
+            font-weight: 600;
+            border-bottom: 2px solid #cbd5e1;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .leaderboard-table td {
+            padding: 11px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+        }
+
+        .leaderboard-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 0.9em;
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .rank-1 { background: #fef08a; color: #854d0e; box-shadow: 0 2px 6px rgba(234, 179, 8, 0.4); }
+        .rank-2 { background: #e2e8f0; color: #334155; }
+        .rank-3 { background: #fed7aa; color: #9a3412; }
+
+        .empty-leaderboard {
+            padding: 40px 20px;
+            color: #64748b;
+            font-size: 1.05em;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .leaderboard-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .file-action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-connect-file {
+            background: #10b981;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-connect-file:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-export {
+            background: #0284c7;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-export:hover {
+            background: #0369a1;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 EcoCity Builder</h1>
+            <p class="tagline">Build a sustainable city in 3 minutes!</p>
+        </div>
+
+        <div class="game-layout">
+            <!-- Left Side: Game Board & Helpful Tips -->
+            <div class="game-left">
+                <div class="game-board" id="gameBoard"></div>
+                <div class="info-panel">
+                    <p><strong>🎯 Goal:</strong> Build a balanced Eco-City! Maximize Sustainability and earn Diversity Bonuses.</p>
+                    <p><strong>💡 Tips:</strong> Mix clean energy (Wind/Solar), citizen housing, farms, water, and forests to unlock up to a +75 Diversity Bonus!</p>
+                </div>
+            </div>
+
+            <!-- Right Side: Timer, Stats, Buildings & Actions -->
+            <div class="game-right">
+                <div class="timer-card">
+                    <div class="timer" id="timer">Time: 3:00</div>
+                </div>
+
+                <div class="stats-panel">
+                    <div class="stat budget">
+                        <div class="stat-label">💰 Budget</div>
+                        <div class="stat-value" id="budget">1000</div>
+                    </div>
+                    <div class="stat pollution">
+                        <div class="stat-label">💨 Pollution</div>
+                        <div class="stat-value" id="pollution">50%</div>
+                    </div>
+                    <div class="stat happiness">
+                        <div class="stat-label">😊 Happiness</div>
+                        <div class="stat-value" id="happiness">50%</div>
+                    </div>
+                    <div class="stat sustainability">
+                        <div class="stat-label">♻️ Sustainability</div>
+                        <div class="stat-value" id="sustainability">0</div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section-title">🏗️ Choose Building</div>
+                <div class="building-controls">
+                    <button class="btn btn-building" onclick="selectBuilding('solar')">☀️ Solar<div class="cost">$80</div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('wind')">💨 Wind<div class="cost">$105</div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('forest')">🌲 Forest<div class="cost">$65</div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('farm')">🌾 Farm<div class="cost">$60</div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('house')">🏠 House<div class="cost">$70</div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('water')">💧 Water<div class="cost">$65</div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('grass')">🌱 Grass<div class="cost">$35</div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('factory')">🏭 Factory<div class="cost">$110</div></button>
+                </div>
+
+                <div class="sidebar-section-title">⚡ Game Actions</div>
+                <div class="action-controls">
+                    <button class="btn btn-stop" id="stopBtn" onclick="stopGame()">🛑 Stop</button>
+                    <button class="btn btn-reset" onclick="resetGame()">🔄 Reset</button>
+                    <button class="btn btn-leaderboard-nav" onclick="openLeaderboard()">🏆 Leaderboard</button>
+                </div>
+
+                <!-- Tutorial Section Below Game Actions -->
+                <div class="tutorial-card">
+                    <div class="tutorial-header">📖 How to Play</div>
+                    <ol class="tutorial-steps">
+                        <li><strong>Select a building</strong> from the palette above (Solar, Trees, Houses, etc.).</li>
+                        <li><strong>Click an empty tile (✨)</strong> to place it — <em>the timer starts with your first placement!</em></li>
+                        <li><strong>Click any placed building</strong> to remove it and refund its budget!</li>
+                        <li><strong>Build a diverse city:</strong> Mix clean energy, homes, nature, and resources for up to a <strong>+75 Eco-Diversity Bonus</strong>!</li>
+                        <li>Click <strong>🛑 Stop</strong> when you're satisfied (or wait for the timer) to submit your score to the Leaderboard!</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-over-modal" id="gameOverModal">
+        <div class="modal-content">
+            <h2 id="resultTitle">Time's Up!</h2>
+            <div class="final-stats" id="finalStats"></div>
+
+            <div class="submission-section" id="submissionSection">
+                <h3>🏆 Save Score to Leaderboard</h3>
+                <div class="input-group">
+                    <input type="text" id="playerName" placeholder="Enter your name..." maxlength="20" />
+                    <button class="btn btn-submit" id="submitScoreBtn" onclick="submitScore()">Submit Score</button>
+                </div>
+                <div id="submitMessage" class="submit-message"></div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn btn-view-leaderboard" onclick="openLeaderboard()">🏆 View Leaderboard</button>
+                <button class="play-again" onclick="resetGame()">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-over-modal" id="leaderboardModal">
+        <div class="modal-content leaderboard-modal-content">
+            <div class="leaderboard-header">
+                <h2>🏆 Hall of Fame</h2>
+                <span class="close-icon" onclick="closeLeaderboard()">&times;</span>
+            </div>
+            <div class="leaderboard-status" id="leaderboardStatus"></div>
+            <div class="table-wrapper">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>Score</th>
+                            <th>Sustainability</th>
+                            <th>Time</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                    </tbody>
+                </table>
+                <div id="emptyLeaderboard" class="empty-leaderboard" style="display: none;">
+                    🌱 No scores recorded yet. Be the first to build an eco-city and submit your score!
+                </div>
+            </div>
+            <div class="leaderboard-footer">
+                <div class="file-action-buttons">
+                    <button class="btn btn-connect-file" id="connectFileBtn" onclick="selectOrCreateLeaderboardFile()" title="Link your local leaderboard.json file directly">📂 Link leaderboard.json</button>
+                    <button class="btn btn-export" onclick="exportLeaderboardFile()" title="Save leaderboard.json to your computer">💾 Export to File</button>
+                    <input type="file" id="filePickerInput" accept=".json" style="display:none" onchange="handleFileInputChange(event)">
+                </div>
+                <button class="play-again" onclick="closeLeaderboard()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GRID_SIZE = 25;
+        const GAME_DURATION = 180; // 3 minutes
+        let timerInterval = null;
+        let gameState = {
+            budget: 1000,
+            pollution: 50,
+            happiness: 50,
+            sustainability: 0,
+            buildings: {},
+            timeLeft: GAME_DURATION,
+            gameActive: true,
+            timerStarted: false,
+            selectedBuilding: null
+        };
+
+        const buildingCosts = {
+            solar: { cost: 80, pollution: -6, happiness: 2, sustainability: 18 },
+            wind: { cost: 105, pollution: -10, happiness: 1, sustainability: 24 },
+            forest: { cost: 65, pollution: -4, happiness: 6, sustainability: 10 },
+            farm: { cost: 60, pollution: -2, happiness: 6, sustainability: 10 },
+            house: { cost: 70, pollution: 2, happiness: 8, sustainability: 12 },
+            water: { cost: 65, pollution: -4, happiness: 7, sustainability: 10 },
+            grass: { cost: 35, pollution: -1, happiness: 3, sustainability: 6 },
+            factory: { cost: 110, pollution: 10, happiness: -4, sustainability: 14 }
+        };
+
+        function initGame() {
+            const board = document.getElementById('gameBoard');
+            board.innerHTML = '';
+            gameState.buildings = {};
+            gameState.timerStarted = false;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+
+            for (let i = 0; i < GRID_SIZE; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.id = `cell-${i}`;
+                cell.innerHTML = '✨';
+                cell.onclick = () => placeBuilding(i);
+                board.appendChild(cell);
+            }
+            updateUI();
+            updateTimerDisplay();
+        }
+
+        function selectBuilding(type) {
+            gameState.selectedBuilding = gameState.selectedBuilding === type ? null : type;
+            updateBuildingButtons();
+        }
+
+        function placeBuilding(cellId) {
+            if (!gameState.gameActive) return;
+
+            // If cell is already occupied, clicking it removes the building!
+            if (gameState.buildings[cellId]) {
+                removeBuilding(cellId);
+                return;
+            }
+
+            if (!gameState.selectedBuilding) {
+                alert('Please select a building from the palette on the right first!');
+                return;
+            }
+
+            const building = gameState.selectedBuilding;
+            const cost = buildingCosts[building];
+
+            if (gameState.budget < cost.cost) {
+                alert('Not enough budget!');
+                return;
+            }
+
+            // Deduct costs and apply effects
+            gameState.budget -= cost.cost;
+            gameState.pollution = Math.max(0, Math.min(100, gameState.pollution + cost.pollution));
+            gameState.happiness = Math.max(0, Math.min(100, gameState.happiness + cost.happiness));
+            gameState.sustainability += cost.sustainability;
+
+            // Place building
+            gameState.buildings[cellId] = building;
+            const cell = document.getElementById(`cell-${cellId}`);
+            cell.innerHTML = getBuildingEmoji(building);
+            cell.className = `cell occupied ${building}`;
+            cell.title = 'Click to remove';
+
+            // Start timer only when the first element is placed
+            if (!gameState.timerStarted) {
+                gameState.timerStarted = true;
+                startTimer();
+            }
+
+            updateUI();
+        }
+
+        function removeBuilding(cellId) {
+            if (!gameState.gameActive) return;
+            const building = gameState.buildings[cellId];
+            if (!building) return;
+
+            const cost = buildingCosts[building];
+            if (cost) {
+                // Refund budget and revert building stats
+                gameState.budget += cost.cost;
+                gameState.pollution = Math.max(0, Math.min(100, gameState.pollution - cost.pollution));
+                gameState.happiness = Math.max(0, Math.min(100, gameState.happiness - cost.happiness));
+                gameState.sustainability = Math.max(0, gameState.sustainability - cost.sustainability);
+            }
+
+            delete gameState.buildings[cellId];
+            const cell = document.getElementById(`cell-${cellId}`);
+            if (cell) {
+                cell.innerHTML = '✨';
+                cell.className = 'cell';
+                cell.title = '';
+            }
+
+            updateUI();
+        }
+
+        function getBuildingEmoji(building) {
+            const emojis = {
+                solar: '☀️',
+                wind: '💨',
+                forest: '🌲',
+                farm: '🌾',
+                house: '🏠',
+                water: '💧',
+                grass: '🌱',
+                factory: '🏭'
+            };
+            return emojis[building] || '❓';
+        }
+
+        function updateUI() {
+            document.getElementById('budget').textContent = '$' + gameState.budget;
+            document.getElementById('pollution').textContent = gameState.pollution + '%';
+            document.getElementById('happiness').textContent = gameState.happiness + '%';
+            document.getElementById('sustainability').textContent = gameState.sustainability;
+        }
+
+        function updateBuildingButtons() {
+            const buttons = document.querySelectorAll('.btn-building');
+            buttons.forEach(btn => {
+                const building = btn.onclick.toString().match(/'([^']+)'/)[1];
+                btn.style.opacity = gameState.selectedBuilding === building ? '1' : '0.6';
+                btn.style.borderColor = gameState.selectedBuilding === building ? '#667eea' : 'transparent';
+                btn.style.borderWidth = '2px';
+            });
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(gameState.timeLeft / 60);
+            const seconds = gameState.timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => {
+                if (!gameState.gameActive) {
+                    clearInterval(timerInterval);
+                    return;
+                }
+                gameState.timeLeft--;
+                updateTimerDisplay();
+
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function stopGame() {
+            if (!gameState.gameActive) return;
+            endGame();
+        }
+
+        function endGame() {
+            if (!gameState.gameActive) return;
+            gameState.gameActive = false;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            const stopBtn = document.getElementById('stopBtn');
+            if (stopBtn) stopBtn.disabled = true;
+            
+            // Calculate Diversity / City Harmony Bonus
+            const uniqueTypes = new Set(Object.values(gameState.buildings)).size;
+            let diversityBonus = 0;
+            if (uniqueTypes >= 8) diversityBonus = 90;
+            else if (uniqueTypes >= 7) diversityBonus = 75;
+            else if (uniqueTypes >= 6) diversityBonus = 55;
+            else if (uniqueTypes >= 5) diversityBonus = 35;
+            else if (uniqueTypes >= 4) diversityBonus = 20;
+            else diversityBonus = uniqueTypes * 3;
+
+            // Calculate final score
+            const finalScore = Math.round(
+                gameState.sustainability * 2 + 
+                gameState.happiness * 0.7 - 
+                gameState.pollution * 0.4 +
+                gameState.budget * 0.05 +
+                diversityBonus
+            );
+
+            let resultMessage = '';
+            if (finalScore >= 500) {
+                resultMessage = '🏆 Excellent! You built a thriving eco-city!';
+            } else if (finalScore >= 350) {
+                resultMessage = '⭐ Great job! Your city is quite sustainable.';
+            } else if (finalScore >= 180) {
+                resultMessage = '👍 Good effort! Room for improvement.';
+            } else {
+                resultMessage = '💭 Try again with more focus on sustainability!';
+            }
+
+            const timeTaken = GAME_DURATION - gameState.timeLeft;
+            const minutesTaken = Math.floor(timeTaken / 60);
+            const secondsTaken = timeTaken % 60;
+            const minutesLeft = Math.floor(gameState.timeLeft / 60);
+            const secondsLeft = gameState.timeLeft % 60;
+
+            const finalStats = `
+                <p><strong>Final Score: ${finalScore}</strong></p>
+                <p>Sustainability: ${gameState.sustainability}</p>
+                <p>Happiness: ${gameState.happiness}%</p>
+                <p>Pollution: ${gameState.pollution}%</p>
+                <p>Eco-Diversity Bonus: +${diversityBonus} (${uniqueTypes} building types)</p>
+                <p>Budget Left: $${gameState.budget}</p>
+                <p>Buildings Placed: ${Object.keys(gameState.buildings).length}</p>
+                <p>Time Taken: ${minutesTaken}:${secondsTaken.toString().padStart(2, '0')} (Left: ${minutesLeft}:${secondsLeft.toString().padStart(2, '0')})</p>
+            `;
+
+            document.getElementById('resultTitle').textContent = resultMessage;
+            document.getElementById('finalStats').innerHTML = finalStats;
+
+            currentRunStats = {
+                score: finalScore,
+                sustainability: gameState.sustainability,
+                happiness: gameState.happiness,
+                pollution: gameState.pollution,
+                budget: gameState.budget,
+                buildings: Object.keys(gameState.buildings).length,
+                timeTaken: timeTaken,
+                timeLeft: gameState.timeLeft
+            };
+
+            const nameInput = document.getElementById('playerName');
+            const submitBtn = document.getElementById('submitScoreBtn');
+            const submitMsg = document.getElementById('submitMessage');
+            if (nameInput) nameInput.value = '';
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Score';
+            }
+            if (submitMsg) {
+                submitMsg.textContent = '';
+                submitMsg.className = 'submit-message';
+            }
+
+            document.getElementById('gameOverModal').classList.add('active');
+        }
+
+        const API_URL = (window.location.protocol.startsWith('http')) 
+            ? '/api/leaderboard' 
+            : 'http://localhost:8000/api/leaderboard';
+
+        let currentRunStats = null;
+        let fileHandle = null;
+
+        async function selectOrCreateLeaderboardFile() {
+            if ('showOpenFilePicker' in window) {
+                try {
+                    const [handle] = await window.showOpenFilePicker({
+                        types: [{
+                            description: 'JSON Files',
+                            accept: { 'application/json': ['.json'] }
+                        }],
+                        multiple: false
+                    });
+                    fileHandle = handle;
+                    const file = await fileHandle.getFile();
+                    const text = await file.text();
+                    let fileScores = [];
+                    try { fileScores = JSON.parse(text); } catch (e) { fileScores = []; }
+                    if (Array.isArray(fileScores)) {
+                        localStorage.setItem('ecocity_leaderboard', JSON.stringify(fileScores));
+                    }
+                    const connectBtn = document.getElementById('connectFileBtn');
+                    if (connectBtn) {
+                        connectBtn.textContent = '✓ Linked to ' + file.name;
+                        connectBtn.style.background = '#059669';
+                    }
+                    await refreshLeaderboardUI();
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        console.error('File picker error:', err);
+                    }
+                }
+            } else {
+                document.getElementById('filePickerInput')?.click();
+            }
+        }
+
+        async function handleFileInputChange(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const text = await file.text();
+            let fileScores = [];
+            try { fileScores = JSON.parse(text); } catch (e) { fileScores = []; }
+            if (Array.isArray(fileScores)) {
+                localStorage.setItem('ecocity_leaderboard', JSON.stringify(fileScores));
+                const connectBtn = document.getElementById('connectFileBtn');
+                if (connectBtn) {
+                    connectBtn.textContent = '✓ Loaded ' + file.name;
+                    connectBtn.style.background = '#059669';
+                }
+                await refreshLeaderboardUI();
+            }
+        }
+
+        async function fetchLeaderboardFromSource() {
+            // 1. Direct file handle if linked
+            if (fileHandle) {
+                try {
+                    const file = await fileHandle.getFile();
+                    const text = await file.text();
+                    let fileScores = [];
+                    try { fileScores = JSON.parse(text); } catch (e) { fileScores = []; }
+                    if (Array.isArray(fileScores)) {
+                        localStorage.setItem('ecocity_leaderboard', JSON.stringify(fileScores));
+                        return { scores: fileScores, source: 'fileHandle', fileName: file.name };
+                    }
+                } catch (e) {
+                    console.warn('Could not read from fileHandle:', e);
+                }
+            }
+
+            // 2. Python server if running
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data)) {
+                        localStorage.setItem('ecocity_leaderboard', JSON.stringify(data));
+                        return { scores: data, source: 'server' };
+                    }
+                }
+            } catch (err) {
+                // Server not reachable
+            }
+
+            // 3. Browser localStorage
+            const local = localStorage.getItem('ecocity_leaderboard');
+            let scores = [];
+            if (local) {
+                try {
+                    scores = JSON.parse(local);
+                } catch (e) {
+                    scores = [];
+                }
+            }
+
+            // 4. If localStorage is empty, try fetching static leaderboard.json (if running on http/localhost)
+            if (scores.length === 0) {
+                try {
+                    const staticRes = await fetch('./leaderboard.json');
+                    if (staticRes.ok) {
+                        const staticData = await staticRes.json();
+                        if (Array.isArray(staticData) && staticData.length > 0) {
+                            localStorage.setItem('ecocity_leaderboard', JSON.stringify(staticData));
+                            return { scores: staticData, source: 'fileHandle', fileName: 'leaderboard.json' };
+                        }
+                    }
+                } catch (e) {
+                    // Ignore if file protocol blocks fetch
+                }
+            }
+
+            return { scores: scores, source: 'local' };
+        }
+
+        async function saveScoreToSource(newRecord) {
+            // 1. Write directly to leaderboard.json via File System Access API if linked
+            if (fileHandle) {
+                try {
+                    const file = await fileHandle.getFile();
+                    const text = await file.text();
+                    let existingScores = [];
+                    try { existingScores = JSON.parse(text); } catch (e) { existingScores = []; }
+                    existingScores.push(newRecord);
+                    existingScores.sort((a, b) => (b.score || 0) - (a.score || 0));
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(JSON.stringify(existingScores, null, 2));
+                    await writable.close();
+                    localStorage.setItem('ecocity_leaderboard', JSON.stringify(existingScores));
+                    return { savedDirectToFile: true, scores: existingScores, fileName: file.name };
+                } catch (err) {
+                    console.warn('Could not write directly to file handle:', err);
+                }
+            }
+
+            // 2. Python server if running
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newRecord)
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && Array.isArray(data.scores)) {
+                        localStorage.setItem('ecocity_leaderboard', JSON.stringify(data.scores));
+                        return { savedServer: true, scores: data.scores };
+                    }
+                }
+            } catch (e) {
+                // Server offline
+            }
+
+            // 3. LocalStorage persistence (always works without any server)
+            const local = localStorage.getItem('ecocity_leaderboard');
+            let scores = [];
+            if (local) {
+                try { scores = JSON.parse(local); } catch (err) { scores = []; }
+            }
+            scores.push(newRecord);
+            scores.sort((a, b) => (b.score || 0) - (a.score || 0));
+            localStorage.setItem('ecocity_leaderboard', JSON.stringify(scores));
+
+            return { savedLocal: true, scores: scores };
+        }
+
+        async function submitScore() {
+            if (!currentRunStats) return;
+            const nameInput = document.getElementById('playerName');
+            const submitBtn = document.getElementById('submitScoreBtn');
+            const submitMsg = document.getElementById('submitMessage');
+            const playerName = nameInput.value.trim();
+
+            if (!playerName) {
+                submitMsg.textContent = '⚠️ Please enter your name before submitting.';
+                submitMsg.className = 'submit-message error';
+                nameInput.focus();
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+            submitMsg.textContent = '';
+
+            const minutesTaken = Math.floor(currentRunStats.timeTaken / 60);
+            const secondsTaken = currentRunStats.timeTaken % 60;
+            const timeFormatted = `${minutesTaken}:${secondsTaken.toString().padStart(2, '0')}`;
+
+            const record = {
+                id: Date.now().toString(),
+                name: playerName,
+                score: currentRunStats.score,
+                sustainability: currentRunStats.sustainability,
+                happiness: currentRunStats.happiness,
+                pollution: currentRunStats.pollution,
+                budget: currentRunStats.budget,
+                buildings: currentRunStats.buildings,
+                timeTaken: timeFormatted,
+                date: new Date().toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+
+            const result = await saveScoreToSource(record);
+            submitBtn.textContent = '✓ Submitted';
+            submitMsg.className = 'submit-message success';
+            if (result.savedDirectToFile) {
+                submitMsg.textContent = `🎉 Score saved directly into ${result.fileName || 'leaderboard.json'}!`;
+            } else if (result.savedServer) {
+                submitMsg.textContent = '🎉 Score saved permanently to leaderboard.json via server!';
+            } else {
+                submitMsg.textContent = '🎉 Score saved in browser! (Link leaderboard.json anytime to sync to file)';
+            }
+
+            setTimeout(() => {
+                openLeaderboard();
+            }, 800);
+        }
+
+        async function openLeaderboard() {
+            const modal = document.getElementById('leaderboardModal');
+            modal.classList.add('active');
+            await refreshLeaderboardUI();
+        }
+
+        function closeLeaderboard() {
+            const modal = document.getElementById('leaderboardModal');
+            modal.classList.remove('active');
+        }
+
+        async function refreshLeaderboardUI() {
+            const { scores, source, fileName } = await fetchLeaderboardFromSource();
+            const statusEl = document.getElementById('leaderboardStatus');
+            const bodyEl = document.getElementById('leaderboardBody');
+            const emptyEl = document.getElementById('emptyLeaderboard');
+
+            if (statusEl) {
+                if (source === 'fileHandle') {
+                    statusEl.innerHTML = `🟢 Directly linked to <strong>${fileName || 'leaderboard.json'}</strong> (direct disk saving active)`;
+                } else if (source === 'server') {
+                    statusEl.innerHTML = '🟢 Connected to Python server (saving to <strong>leaderboard.json</strong>)';
+                } else {
+                    statusEl.innerHTML = '💾 Saved in browser storage. Click <strong>"📂 Link leaderboard.json"</strong> to save directly to file on disk.';
+                }
+            }
+
+            bodyEl.innerHTML = '';
+            if (!scores || scores.length === 0) {
+                emptyEl.style.display = 'block';
+                return;
+            }
+
+            emptyEl.style.display = 'none';
+            scores.forEach((entry, index) => {
+                const tr = document.createElement('tr');
+                let rankDisplay = index + 1;
+                let rankClass = '';
+                if (index === 0) rankClass = 'rank-1';
+                else if (index === 1) rankClass = 'rank-2';
+                else if (index === 2) rankClass = 'rank-3';
+
+                tr.innerHTML = `
+                    <td><span class="rank-badge ${rankClass}">${rankDisplay}</span></td>
+                    <td><strong>${escapeHtml(entry.name || 'Anonymous')}</strong></td>
+                    <td style="color:#2d5016; font-weight:bold;">${entry.score}</td>
+                    <td>${entry.sustainability}</td>
+                    <td>${entry.timeTaken || '-'}</td>
+                    <td style="font-size: 0.85em; color: #64748b;">${entry.date || '-'}</td>
+                `;
+                bodyEl.appendChild(tr);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function exportLeaderboardFile() {
+            const { scores } = await fetchLeaderboardFromSource();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scores, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "leaderboard.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function resetGame() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            gameState = {
+                budget: 1000,
+                pollution: 50,
+                happiness: 50,
+                sustainability: 0,
+                buildings: {},
+                timeLeft: GAME_DURATION,
+                gameActive: true,
+                timerStarted: false,
+                selectedBuilding: null
+            };
+            const stopBtn = document.getElementById('stopBtn');
+            if (stopBtn) stopBtn.disabled = false;
+            document.getElementById('gameOverModal').classList.remove('active');
+            initGame();
+        }
+
+        // Allow pressing Enter in the name input field to submit
+        document.getElementById('playerName')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') submitScore();
+        });
+
+        // Start game
+        initGame();
+    </script>
+</body>
+</html>
