@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EcoCity Builder - Sustainable City Game</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -24,7 +27,10 @@
             padding: 20px;
         }
 
-        button, input, select, textarea {
+        button,
+        input,
+        select,
+        textarea {
             font-family: inherit;
         }
 
@@ -122,14 +128,45 @@
             box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
         }
 
-        .cell.grass { background: #c8e6c9; border-color: #81c784; }
-        .cell.solar { background: #fff9c4; border-color: #fbc02d; }
-        .cell.wind { background: #e3f2fd; border-color: #42a5f5; }
-        .cell.forest { background: #a5d6a7; border-color: #2e7d32; }
-        .cell.farm { background: #ffccbc; border-color: #ff7043; }
-        .cell.house { background: #f8bbd0; border-color: #ec407a; }
-        .cell.factory { background: #b0bec5; border-color: #607d8b; }
-        .cell.water { background: #80deea; border-color: #00bcd4; }
+        .cell.grass {
+            background: #c8e6c9;
+            border-color: #81c784;
+        }
+
+        .cell.solar {
+            background: #fff9c4;
+            border-color: #fbc02d;
+        }
+
+        .cell.wind {
+            background: #e3f2fd;
+            border-color: #42a5f5;
+        }
+
+        .cell.forest {
+            background: #a5d6a7;
+            border-color: #2e7d32;
+        }
+
+        .cell.farm {
+            background: #ffccbc;
+            border-color: #ff7043;
+        }
+
+        .cell.house {
+            background: #f8bbd0;
+            border-color: #ec407a;
+        }
+
+        .cell.factory {
+            background: #b0bec5;
+            border-color: #607d8b;
+        }
+
+        .cell.water {
+            background: #80deea;
+            border-color: #00bcd4;
+        }
 
         .info-panel {
             background: #f8fafc;
@@ -339,14 +376,17 @@
             .game-layout {
                 grid-template-columns: 1fr;
             }
+
             .container {
                 padding: 16px;
             }
+
             .game-board {
                 max-width: 500px;
                 margin-left: auto;
                 margin-right: auto;
             }
+
             .building-controls {
                 grid-template-columns: repeat(4, 1fr);
             }
@@ -356,9 +396,11 @@
             .building-controls {
                 grid-template-columns: repeat(2, 1fr);
             }
+
             .action-controls {
                 grid-template-columns: 1fr;
             }
+
             .cell {
                 font-size: 1.7em;
             }
@@ -498,8 +540,13 @@
             min-height: 1.2em;
         }
 
-        .submit-message.success { color: #16a34a; }
-        .submit-message.error { color: #dc2626; }
+        .submit-message.success {
+            color: #16a34a;
+        }
+
+        .submit-message.error {
+            color: #dc2626;
+        }
 
         .modal-buttons {
             display: flex;
@@ -624,9 +671,21 @@
             color: #475569;
         }
 
-        .rank-1 { background: #fef08a; color: #854d0e; box-shadow: 0 2px 6px rgba(234, 179, 8, 0.4); }
-        .rank-2 { background: #e2e8f0; color: #334155; }
-        .rank-3 { background: #fed7aa; color: #9a3412; }
+        .rank-1 {
+            background: #fef08a;
+            color: #854d0e;
+            box-shadow: 0 2px 6px rgba(234, 179, 8, 0.4);
+        }
+
+        .rank-2 {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .rank-3 {
+            background: #fed7aa;
+            color: #9a3412;
+        }
 
         .empty-leaderboard {
             padding: 40px 20px;
@@ -683,6 +742,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -695,8 +755,10 @@
             <div class="game-left">
                 <div class="game-board" id="gameBoard"></div>
                 <div class="info-panel">
-                    <p><strong>Goal:</strong> Build a balanced Eco-City! Maximize Sustainability and earn Diversity Bonuses.</p>
-                    <p><strong>Tips:</strong> Mix clean energy (Wind/Solar), citizen housing, farms, water, and forests to unlock up to a +75 Diversity Bonus!</p>
+                    <p><strong>Goal:</strong> Build a balanced Eco-City! Maximize Sustainability and earn Diversity
+                        Bonuses.</p>
+                    <p><strong>Tips:</strong> Mix clean energy (Wind/Solar), citizen housing, farms, water, and forests
+                        to unlock up to a +75 Diversity Bonus!</p>
                 </div>
             </div>
 
@@ -727,14 +789,22 @@
 
                 <div class="sidebar-section-title">Choose Building</div>
                 <div class="building-controls">
-                    <button class="btn btn-building" onclick="selectBuilding('solar')">☀️ Solar<div class="cost">$80</div></button>
-                    <button class="btn btn-building" onclick="selectBuilding('wind')">💨 Wind<div class="cost">$105</div></button>
-                    <button class="btn btn-building" onclick="selectBuilding('forest')">🌲 Forest<div class="cost">$65</div></button>
-                    <button class="btn btn-building" onclick="selectBuilding('farm')">🌾 Farm<div class="cost">$60</div></button>
-                    <button class="btn btn-building" onclick="selectBuilding('house')">🏠 House<div class="cost">$70</div></button>
-                    <button class="btn btn-building" onclick="selectBuilding('water')">💧 Water<div class="cost">$65</div></button>
-                    <button class="btn btn-building" onclick="selectBuilding('grass')">🌱 Grass<div class="cost">$35</div></button>
-                    <button class="btn btn-building" onclick="selectBuilding('factory')">🏭 Factory<div class="cost">$110</div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('solar')">☀️ Solar<div class="cost">$80
+                        </div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('wind')">💨 Wind<div class="cost">$105
+                        </div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('forest')">🌲 Forest<div class="cost">$65
+                        </div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('farm')">🌾 Farm<div class="cost">$60</div>
+                        </button>
+                    <button class="btn btn-building" onclick="selectBuilding('house')">🏠 House<div class="cost">$70
+                        </div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('water')">💧 Water<div class="cost">$65
+                        </div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('grass')">🌱 Grass<div class="cost">$35
+                        </div></button>
+                    <button class="btn btn-building" onclick="selectBuilding('factory')">🏭 Factory<div class="cost">
+                            $110</div></button>
                 </div>
 
                 <div class="sidebar-section-title">Game Actions</div>
@@ -749,10 +819,13 @@
                     <div class="tutorial-header">How to Play</div>
                     <ol class="tutorial-steps">
                         <li><strong>Select a building</strong> from the palette above (Solar, Trees, Houses, etc.).</li>
-                        <li><strong>Click an empty tile</strong> to place it — <em>the timer starts with your first placement!</em></li>
+                        <li><strong>Click an empty tile</strong> to place it — <em>the timer starts with your first
+                                placement!</em></li>
                         <li><strong>Click any placed building</strong> to remove it and refund its budget!</li>
-                        <li><strong>Build a diverse city:</strong> Mix clean energy, homes, nature, and resources for up to a <strong>+75 Eco-Diversity Bonus</strong>!</li>
-                        <li>Click <strong>Stop</strong> when you're satisfied (or wait for the timer) to submit your score to the Leaderboard!</li>
+                        <li><strong>Build a diverse city:</strong> Mix clean energy, homes, nature, and resources for up
+                            to a <strong>+75 Eco-Diversity Bonus</strong>!</li>
+                        <li>Click <strong>Stop</strong> when you're satisfied (or wait for the timer) to submit your
+                            score to the Leaderboard!</li>
                     </ol>
                 </div>
             </div>
@@ -808,9 +881,12 @@
             </div>
             <div class="leaderboard-footer">
                 <div class="file-action-buttons">
-                    <button class="btn btn-connect-file" id="connectFileBtn" onclick="selectOrCreateLeaderboardFile()" title="Link your local leaderboard.json file directly">Link leaderboard.json</button>
-                    <button class="btn btn-export" onclick="exportLeaderboardFile()" title="Save leaderboard.json to your computer">Export to File</button>
-                    <input type="file" id="filePickerInput" accept=".json" style="display:none" onchange="handleFileInputChange(event)">
+                    <button class="btn btn-connect-file" id="connectFileBtn" onclick="selectOrCreateLeaderboardFile()"
+                        title="Link your local leaderboard.json file directly">Link leaderboard.json</button>
+                    <button class="btn btn-export" onclick="exportLeaderboardFile()"
+                        title="Save leaderboard.json to your computer">Export to File</button>
+                    <input type="file" id="filePickerInput" accept=".json" style="display:none"
+                        onchange="handleFileInputChange(event)">
                 </div>
                 <button class="play-again" onclick="closeLeaderboard()">Close</button>
             </div>
@@ -974,7 +1050,7 @@
         function updateTimerDisplay() {
             const minutes = Math.floor(gameState.timeLeft / 60);
             const seconds = gameState.timeLeft % 60;
-            document.getElementById('timer').textContent = 
+            document.getElementById('timer').textContent =
                 `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
         }
 
@@ -1013,7 +1089,7 @@
 
             const stopBtn = document.getElementById('stopBtn');
             if (stopBtn) stopBtn.disabled = true;
-            
+
             // Calculate Diversity / City Harmony Bonus
             const uniqueTypes = new Set(Object.values(gameState.buildings)).size;
             let diversityBonus = 0;
@@ -1026,8 +1102,8 @@
 
             // Calculate final score
             const finalScore = Math.round(
-                gameState.sustainability * 2 + 
-                gameState.happiness * 0.7 - 
+                gameState.sustainability * 2 +
+                gameState.happiness * 0.7 -
                 gameState.pollution * 0.4 +
                 gameState.budget * 0.05 +
                 diversityBonus
@@ -1091,8 +1167,24 @@
             document.getElementById('gameOverModal').classList.add('active');
         }
 
-        const API_URL = (window.location.protocol.startsWith('http')) 
-            ? '/api/leaderboard' 
+        // ==========================================
+        // Global Leaderboard (Supabase Configuration)
+        // Paste your Supabase Project URL and Public Anon Key below:
+        // ==========================================
+        const SUPABASE_URL = 'https://owktnbjipuucpgfmdpvs.supabase.co'; // e.g. 'https://xyzcompany.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93a3RuYmppcHV1Y3BnZm1kcHZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0OTA1MjMsImV4cCI6MjEwNjA2NjUyM30.xBOHTQs-XYivv5B5uThlW8T8tuOYNUxJGduEJbrxkwQ'; // e.g. 'eyJhbGciOi...'
+        let supabaseClient = null;
+
+        if (typeof window.supabase !== 'undefined' && SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes('YOUR_SUPABASE')) {
+            try {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } catch (err) {
+                console.warn('Failed to initialize Supabase client:', err);
+            }
+        }
+
+        const API_URL = (window.location.protocol.startsWith('http'))
+            ? '/api/leaderboard'
             : 'http://localhost:8000/api/leaderboard';
 
         let currentRunStats = null;
@@ -1150,7 +1242,26 @@
         }
 
         async function fetchLeaderboardFromSource() {
-            // 1. Direct file handle if linked
+            // 1. Supabase Global Cloud Database (if configured)
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('leaderboard')
+                        .select('*')
+                        .order('score', { ascending: false })
+                        .limit(50);
+                    if (!error && Array.isArray(data)) {
+                        localStorage.setItem('ecocity_leaderboard', JSON.stringify(data));
+                        return { scores: data, source: 'supabase' };
+                    } else if (error) {
+                        console.warn('Supabase fetch error:', error.message);
+                    }
+                } catch (e) {
+                    console.warn('Supabase fetch failed:', e);
+                }
+            }
+
+            // 2. Direct file handle if linked
             if (fileHandle) {
                 try {
                     const file = await fileHandle.getFile();
@@ -1166,7 +1277,7 @@
                 }
             }
 
-            // 2. Python server if running
+            // 3. Python server if running
             try {
                 const response = await fetch(API_URL, {
                     method: 'GET',
@@ -1183,7 +1294,7 @@
                 // Server not reachable
             }
 
-            // 3. Browser localStorage
+            // 4. Browser localStorage
             const local = localStorage.getItem('ecocity_leaderboard');
             let scores = [];
             if (local) {
@@ -1194,7 +1305,7 @@
                 }
             }
 
-            // 4. If localStorage is empty, try fetching static leaderboard.json (if running on http/localhost)
+            // 5. If localStorage is empty, try fetching static leaderboard.json (if running on http/localhost)
             if (scores.length === 0) {
                 try {
                     const staticRes = await fetch('./leaderboard.json');
@@ -1214,7 +1325,41 @@
         }
 
         async function saveScoreToSource(newRecord) {
-            // 1. Write directly to leaderboard.json via File System Access API if linked
+            // 1. Supabase Global Cloud Database (if configured)
+            if (supabaseClient) {
+                try {
+                    const payload = {
+                        name: newRecord.name,
+                        score: newRecord.score,
+                        sustainability: newRecord.sustainability,
+                        happiness: newRecord.happiness,
+                        pollution: newRecord.pollution,
+                        budget: newRecord.budget,
+                        buildings: newRecord.buildings,
+                        time_taken: newRecord.timeTaken
+                    };
+                    const { error } = await supabaseClient
+                        .from('leaderboard')
+                        .insert([payload]);
+
+                    if (!error) {
+                        const { data } = await supabaseClient
+                            .from('leaderboard')
+                            .select('*')
+                            .order('score', { ascending: false })
+                            .limit(50);
+                        const updated = data || [newRecord];
+                        localStorage.setItem('ecocity_leaderboard', JSON.stringify(updated));
+                        return { savedSupabase: true, scores: updated };
+                    } else {
+                        console.error('Supabase insert error:', error.message);
+                    }
+                } catch (err) {
+                    console.warn('Supabase save error:', err);
+                }
+            }
+
+            // 2. Write directly to leaderboard.json via File System Access API if linked
             if (fileHandle) {
                 try {
                     const file = await fileHandle.getFile();
@@ -1233,7 +1378,7 @@
                 }
             }
 
-            // 2. Python server if running
+            // 3. Python server if running
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -1251,7 +1396,7 @@
                 // Server offline
             }
 
-            // 3. LocalStorage persistence (always works without any server)
+            // 4. LocalStorage persistence (always works without any server)
             const local = localStorage.getItem('ecocity_leaderboard');
             let scores = [];
             if (local) {
@@ -1308,7 +1453,9 @@
             const result = await saveScoreToSource(record);
             submitBtn.textContent = 'Submitted';
             submitMsg.className = 'submit-message success';
-            if (result.savedDirectToFile) {
+            if (result.savedSupabase) {
+                submitMsg.textContent = '🌟 Score posted to the Global Leaderboard!';
+            } else if (result.savedDirectToFile) {
                 submitMsg.textContent = `Score saved directly into ${result.fileName || 'leaderboard.json'}!`;
             } else if (result.savedServer) {
                 submitMsg.textContent = 'Score saved permanently to leaderboard.json via server!';
@@ -1339,7 +1486,9 @@
             const emptyEl = document.getElementById('emptyLeaderboard');
 
             if (statusEl) {
-                if (source === 'fileHandle') {
+                if (source === 'supabase') {
+                    statusEl.innerHTML = '🌐 <strong>Global Leaderboard Active</strong> (Connected to Supabase Cloud)';
+                } else if (source === 'fileHandle') {
                     statusEl.innerHTML = `Directly linked to <strong>${fileName || 'leaderboard.json'}</strong> (direct disk saving active)`;
                 } else if (source === 'server') {
                     statusEl.innerHTML = 'Connected to Python server (saving to <strong>leaderboard.json</strong>)';
@@ -1363,13 +1512,24 @@
                 else if (index === 1) rankClass = 'rank-2';
                 else if (index === 2) rankClass = 'rank-3';
 
+                const timeDisplay = entry.timeTaken || entry.time_taken || '-';
+                let dateDisplay = entry.date;
+                if (!dateDisplay && entry.created_at) {
+                    dateDisplay = new Date(entry.created_at).toLocaleDateString(undefined, {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                }
+                dateDisplay = dateDisplay || '-';
+
                 tr.innerHTML = `
                     <td><span class="rank-badge ${rankClass}">${rankDisplay}</span></td>
                     <td><strong>${escapeHtml(entry.name || 'Anonymous')}</strong></td>
                     <td style="color:#2d5016; font-weight:bold;">${entry.score}</td>
                     <td>${entry.sustainability}</td>
-                    <td>${entry.timeTaken || '-'}</td>
-                    <td style="font-size: 0.85em; color: #64748b;">${entry.date || '-'}</td>
+                    <td>${timeDisplay}</td>
+                    <td style="font-size: 0.85em; color: #64748b;">${dateDisplay}</td>
                 `;
                 bodyEl.appendChild(tr);
             });
@@ -1423,4 +1583,5 @@
         initGame();
     </script>
 </body>
+
 </html>
