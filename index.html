@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #e57373;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -128,7 +128,7 @@
             background: #f8fafc;
             padding: 10px 14px;
             border-radius: 10px;
-            border-left: 4px solid #667eea;
+            border: 1px solid #e2e8f0;
             font-size: 0.85em;
             line-height: 1.45;
             color: #334155;
@@ -171,13 +171,8 @@
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             padding: 9px 12px;
             border-radius: 10px;
-            border-left: 4px solid #667eea;
+            border: 1px solid #e2e8f0;
         }
-
-        .stat.budget { border-left-color: #f59e0b; }
-        .stat.pollution { border-left-color: #ef4444; }
-        .stat.happiness { border-left-color: #10b981; }
-        .stat.sustainability { border-left-color: #3b82f6; }
 
         .stat-label {
             font-size: 0.82em;
@@ -220,14 +215,15 @@
         }
 
         .btn-building {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #c62828;
             color: white;
             border: 2px solid transparent;
         }
 
         .btn-building:hover {
+            background: #b71c1c;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(183, 28, 28, 0.4);
         }
 
         .btn-building:disabled {
@@ -237,9 +233,11 @@
         }
 
         .cost {
-            font-size: 0.75em;
-            opacity: 0.85;
+            font-size: 0.78em;
+            opacity: 0.95;
             margin-top: 2px;
+            color: #ffebee;
+            font-weight: 500;
         }
 
         .action-controls {
@@ -309,14 +307,14 @@
         }
 
         .btn-leaderboard-nav {
-            background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
-            color: #2c3e50;
+            background: #c62828;
+            color: white;
         }
 
         .btn-leaderboard-nav:hover {
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            background: #b71c1c;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
+            box-shadow: 0 4px 12px rgba(183, 28, 28, 0.4);
         }
 
         .btn-reset {
@@ -504,8 +502,8 @@
         }
 
         .btn-view-leaderboard {
-            background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
-            color: #2c3e50;
+            background: #c62828;
+            color: white;
             padding: 12px 24px;
             border: none;
             border-radius: 8px;
@@ -516,8 +514,9 @@
         }
 
         .btn-view-leaderboard:hover {
+            background: #b71c1c;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+            box-shadow: 0 5px 15px rgba(183, 28, 28, 0.4);
         }
 
         .leaderboard-modal-content {
@@ -680,7 +679,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🌍 EcoCity Builder</h1>
+            <h1>EcoCity Builder</h1>
             <p class="tagline">Build a sustainable city in 3 minutes!</p>
         </div>
 
@@ -689,8 +688,8 @@
             <div class="game-left">
                 <div class="game-board" id="gameBoard"></div>
                 <div class="info-panel">
-                    <p><strong>🎯 Goal:</strong> Build a balanced Eco-City! Maximize Sustainability and earn Diversity Bonuses.</p>
-                    <p><strong>💡 Tips:</strong> Mix clean energy (Wind/Solar), citizen housing, farms, water, and forests to unlock up to a +75 Diversity Bonus!</p>
+                    <p><strong>Goal:</strong> Build a balanced Eco-City! Maximize Sustainability and earn Diversity Bonuses.</p>
+                    <p><strong>Tips:</strong> Mix clean energy (Wind/Solar), citizen housing, farms, water, and forests to unlock up to a +75 Diversity Bonus!</p>
                 </div>
             </div>
 
@@ -702,24 +701,24 @@
 
                 <div class="stats-panel">
                     <div class="stat budget">
-                        <div class="stat-label">💰 Budget</div>
+                        <div class="stat-label">Budget</div>
                         <div class="stat-value" id="budget">1000</div>
                     </div>
                     <div class="stat pollution">
-                        <div class="stat-label">💨 Pollution</div>
+                        <div class="stat-label">Pollution</div>
                         <div class="stat-value" id="pollution">50%</div>
                     </div>
                     <div class="stat happiness">
-                        <div class="stat-label">😊 Happiness</div>
+                        <div class="stat-label">Happiness</div>
                         <div class="stat-value" id="happiness">50%</div>
                     </div>
                     <div class="stat sustainability">
-                        <div class="stat-label">♻️ Sustainability</div>
+                        <div class="stat-label">Sustainability</div>
                         <div class="stat-value" id="sustainability">0</div>
                     </div>
                 </div>
 
-                <div class="sidebar-section-title">🏗️ Choose Building</div>
+                <div class="sidebar-section-title">Choose Building</div>
                 <div class="building-controls">
                     <button class="btn btn-building" onclick="selectBuilding('solar')">☀️ Solar<div class="cost">$80</div></button>
                     <button class="btn btn-building" onclick="selectBuilding('wind')">💨 Wind<div class="cost">$105</div></button>
@@ -731,22 +730,22 @@
                     <button class="btn btn-building" onclick="selectBuilding('factory')">🏭 Factory<div class="cost">$110</div></button>
                 </div>
 
-                <div class="sidebar-section-title">⚡ Game Actions</div>
+                <div class="sidebar-section-title">Game Actions</div>
                 <div class="action-controls">
-                    <button class="btn btn-stop" id="stopBtn" onclick="stopGame()">🛑 Stop</button>
-                    <button class="btn btn-reset" onclick="resetGame()">🔄 Reset</button>
-                    <button class="btn btn-leaderboard-nav" onclick="openLeaderboard()">🏆 Leaderboard</button>
+                    <button class="btn btn-stop" id="stopBtn" onclick="stopGame()">Stop</button>
+                    <button class="btn btn-reset" onclick="resetGame()">Reset</button>
+                    <button class="btn btn-leaderboard-nav" onclick="openLeaderboard()">Leaderboard</button>
                 </div>
 
                 <!-- Tutorial Section Below Game Actions -->
                 <div class="tutorial-card">
-                    <div class="tutorial-header">📖 How to Play</div>
+                    <div class="tutorial-header">How to Play</div>
                     <ol class="tutorial-steps">
                         <li><strong>Select a building</strong> from the palette above (Solar, Trees, Houses, etc.).</li>
-                        <li><strong>Click an empty tile (✨)</strong> to place it — <em>the timer starts with your first placement!</em></li>
+                        <li><strong>Click an empty tile</strong> to place it — <em>the timer starts with your first placement!</em></li>
                         <li><strong>Click any placed building</strong> to remove it and refund its budget!</li>
                         <li><strong>Build a diverse city:</strong> Mix clean energy, homes, nature, and resources for up to a <strong>+75 Eco-Diversity Bonus</strong>!</li>
-                        <li>Click <strong>🛑 Stop</strong> when you're satisfied (or wait for the timer) to submit your score to the Leaderboard!</li>
+                        <li>Click <strong>Stop</strong> when you're satisfied (or wait for the timer) to submit your score to the Leaderboard!</li>
                     </ol>
                 </div>
             </div>
@@ -759,7 +758,7 @@
             <div class="final-stats" id="finalStats"></div>
 
             <div class="submission-section" id="submissionSection">
-                <h3>🏆 Save Score to Leaderboard</h3>
+                <h3>Save Score to Leaderboard</h3>
                 <div class="input-group">
                     <input type="text" id="playerName" placeholder="Enter your name..." maxlength="20" />
                     <button class="btn btn-submit" id="submitScoreBtn" onclick="submitScore()">Submit Score</button>
@@ -768,7 +767,7 @@
             </div>
 
             <div class="modal-buttons">
-                <button class="btn btn-view-leaderboard" onclick="openLeaderboard()">🏆 View Leaderboard</button>
+                <button class="btn btn-view-leaderboard" onclick="openLeaderboard()">View Leaderboard</button>
                 <button class="play-again" onclick="resetGame()">Play Again</button>
             </div>
         </div>
@@ -777,7 +776,7 @@
     <div class="game-over-modal" id="leaderboardModal">
         <div class="modal-content leaderboard-modal-content">
             <div class="leaderboard-header">
-                <h2>🏆 Hall of Fame</h2>
+                <h2>Hall of Fame</h2>
                 <span class="close-icon" onclick="closeLeaderboard()">&times;</span>
             </div>
             <div class="leaderboard-status" id="leaderboardStatus"></div>
@@ -797,13 +796,13 @@
                     </tbody>
                 </table>
                 <div id="emptyLeaderboard" class="empty-leaderboard" style="display: none;">
-                    🌱 No scores recorded yet. Be the first to build an eco-city and submit your score!
+                    No scores recorded yet. Be the first to build an eco-city and submit your score!
                 </div>
             </div>
             <div class="leaderboard-footer">
                 <div class="file-action-buttons">
-                    <button class="btn btn-connect-file" id="connectFileBtn" onclick="selectOrCreateLeaderboardFile()" title="Link your local leaderboard.json file directly">📂 Link leaderboard.json</button>
-                    <button class="btn btn-export" onclick="exportLeaderboardFile()" title="Save leaderboard.json to your computer">💾 Export to File</button>
+                    <button class="btn btn-connect-file" id="connectFileBtn" onclick="selectOrCreateLeaderboardFile()" title="Link your local leaderboard.json file directly">Link leaderboard.json</button>
+                    <button class="btn btn-export" onclick="exportLeaderboardFile()" title="Save leaderboard.json to your computer">Export to File</button>
                     <input type="file" id="filePickerInput" accept=".json" style="display:none" onchange="handleFileInputChange(event)">
                 </div>
                 <button class="play-again" onclick="closeLeaderboard()">Close</button>
@@ -852,7 +851,7 @@
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.id = `cell-${i}`;
-                cell.innerHTML = '✨';
+                cell.innerHTML = '';
                 cell.onclick = () => placeBuilding(i);
                 board.appendChild(cell);
             }
@@ -926,7 +925,7 @@
             delete gameState.buildings[cellId];
             const cell = document.getElementById(`cell-${cellId}`);
             if (cell) {
-                cell.innerHTML = '✨';
+                cell.innerHTML = '';
                 cell.className = 'cell';
                 cell.title = '';
             }
@@ -960,7 +959,7 @@
             buttons.forEach(btn => {
                 const building = btn.onclick.toString().match(/'([^']+)'/)[1];
                 btn.style.opacity = gameState.selectedBuilding === building ? '1' : '0.6';
-                btn.style.borderColor = gameState.selectedBuilding === building ? '#667eea' : 'transparent';
+                btn.style.borderColor = gameState.selectedBuilding === building ? '#ffffff' : 'transparent';
                 btn.style.borderWidth = '2px';
             });
         }
@@ -1029,13 +1028,13 @@
 
             let resultMessage = '';
             if (finalScore >= 500) {
-                resultMessage = '🏆 Excellent! You built a thriving eco-city!';
+                resultMessage = 'Excellent! You built a thriving eco-city!';
             } else if (finalScore >= 350) {
-                resultMessage = '⭐ Great job! Your city is quite sustainable.';
+                resultMessage = 'Great job! Your city is quite sustainable.';
             } else if (finalScore >= 180) {
-                resultMessage = '👍 Good effort! Room for improvement.';
+                resultMessage = 'Good effort! Room for improvement.';
             } else {
-                resultMessage = '💭 Try again with more focus on sustainability!';
+                resultMessage = 'Try again with more focus on sustainability!';
             }
 
             const timeTaken = GAME_DURATION - gameState.timeLeft;
@@ -1266,7 +1265,7 @@
             const playerName = nameInput.value.trim();
 
             if (!playerName) {
-                submitMsg.textContent = '⚠️ Please enter your name before submitting.';
+                submitMsg.textContent = 'Please enter your name before submitting.';
                 submitMsg.className = 'submit-message error';
                 nameInput.focus();
                 return;
@@ -1300,14 +1299,14 @@
             };
 
             const result = await saveScoreToSource(record);
-            submitBtn.textContent = '✓ Submitted';
+            submitBtn.textContent = 'Submitted';
             submitMsg.className = 'submit-message success';
             if (result.savedDirectToFile) {
-                submitMsg.textContent = `🎉 Score saved directly into ${result.fileName || 'leaderboard.json'}!`;
+                submitMsg.textContent = `Score saved directly into ${result.fileName || 'leaderboard.json'}!`;
             } else if (result.savedServer) {
-                submitMsg.textContent = '🎉 Score saved permanently to leaderboard.json via server!';
+                submitMsg.textContent = 'Score saved permanently to leaderboard.json via server!';
             } else {
-                submitMsg.textContent = '🎉 Score saved in browser! (Link leaderboard.json anytime to sync to file)';
+                submitMsg.textContent = 'Score saved in browser! (Link leaderboard.json anytime to sync to file)';
             }
 
             setTimeout(() => {
@@ -1334,11 +1333,11 @@
 
             if (statusEl) {
                 if (source === 'fileHandle') {
-                    statusEl.innerHTML = `🟢 Directly linked to <strong>${fileName || 'leaderboard.json'}</strong> (direct disk saving active)`;
+                    statusEl.innerHTML = `Directly linked to <strong>${fileName || 'leaderboard.json'}</strong> (direct disk saving active)`;
                 } else if (source === 'server') {
-                    statusEl.innerHTML = '🟢 Connected to Python server (saving to <strong>leaderboard.json</strong>)';
+                    statusEl.innerHTML = 'Connected to Python server (saving to <strong>leaderboard.json</strong>)';
                 } else {
-                    statusEl.innerHTML = '💾 Saved in browser storage. Click <strong>"📂 Link leaderboard.json"</strong> to save directly to file on disk.';
+                    statusEl.innerHTML = 'Saved in browser storage. Click <strong>"Link leaderboard.json"</strong> to save directly to file on disk.';
                 }
             }
 
