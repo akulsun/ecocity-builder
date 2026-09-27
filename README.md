@@ -45,3 +45,16 @@ Featuring clean **Open Sans** typography, responsive layouts, and a **real-time 
 5. **Finish & Submit:** Click **Stop** when your city is optimized (or let the timer expire), enter your name, and lock your spot on the Global Leaderboard!
 
 ---
+
+## 🧰 Built With
+
+- **HTML5 & Vanilla JavaScript (ES6+)**: Zero framework overhead, ultra-fast performance.
+- **Vanilla CSS3**: Custom styles, responsive grid, and glassmorphic modal design.
+- **Google Fonts**: [Open Sans](https://fonts.google.com/specimen/Open+Sans) typeface.
+- **Supabase**: Real-time cloud storage and serverless PostgreSQL database.
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
