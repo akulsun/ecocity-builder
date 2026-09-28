@@ -6,6 +6,8 @@
 
 Featuring clean **Open Sans** typography, responsive layouts, and a **real-time Global Leaderboard powered by Supabase**, EcoCity Builder lets players compete worldwide for the top sustainability ranking.
 
+Play the game: akulsun.github.io/ecocity-builder
+
 ---
 
 ## ✨ Features
