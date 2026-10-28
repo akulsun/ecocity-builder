@@ -1,4 +1,4 @@
-# 🌍 EcoCity Builder
+# EcoCity Builder
 
 > **Can you design the ultimate sustainable metropolis before time runs out?**
 
@@ -6,26 +6,26 @@
 
 Featuring clean **Open Sans** typography, responsive layouts, and a **real-time Global Leaderboard powered by Supabase**, EcoCity Builder lets players compete worldwide for the top sustainability ranking.
 
-Play the game: akulsun.github.io/ecocity-builder
+Play the game: [https://akulsun.github.io/ecocity-builder/](https://akulsun.github.io/ecocity-builder/)
 
 ---
 
-## ✨ Features
+## Features
 
-- ⏱️ **Timer-on-First-Move:** The 3-minute countdown begins only when you place your first structure—plan your strategy before making your first move.
-- 🔄 **Dynamic Undo / Refund:** Click any placed building to dismantle it and refund its budget back into your treasury on the fly.
-- 🌿 **Eco-Diversity Scoring Engine:** Rewards balanced city designs (clean energy, housing, agriculture, wetlands, and parks) with up to **+90 Harmony Bonus points**.
-- 🛑 **Early Stop Mechanic:** Lock in your metropolis and submit your score as soon as your layout is perfected without waiting for the timer.
-- 🌐 **Global Cloud Leaderboard:** Live worldwide ranking powered by **Supabase (PostgreSQL)**, featuring instant score submission and real-time top-50 standings.
-- 💾 **Offline & Local Fallback:** Zero external dependencies required to play! Automatically saves high scores to `localStorage` when offline or without internet access.
-- 📱 **Fully Responsive:** Optimized side-by-side dashboard for desktop and stacked controls for mobile screens.
+- **Timer-on-First-Move:** The 3-minute countdown begins only when you place your first structure—plan your strategy before making your first move.
+- **Dynamic Undo / Refund:** Click any placed building to dismantle it and refund its budget back into your treasury on the fly.
+- **Eco-Diversity Scoring Engine:** Rewards balanced city designs (clean energy, housing, agriculture, wetlands, and parks) with up to **+90 Harmony Bonus points**.
+- **Early Stop Mechanic:** Lock in your metropolis and submit your score as soon as your layout is perfected without waiting for the timer.
+- **Global Cloud Leaderboard:** Live worldwide ranking powered by **Supabase (PostgreSQL)**, featuring instant score submission and real-time top-50 standings.
+- **Offline & Local Fallback:** Zero external dependencies required to play! Automatically saves high scores to `localStorage` when offline or without internet access.
+- **Fully Responsive:** Optimized side-by-side dashboard for desktop and stacked controls for mobile screens.
 
 ---
 
-## 🎮 How to Play
+## How to Play
 
 1. **Select a Building** from the palette:
-   | Building | Emoji | Cost | Impact |
+   | Building | Icon | Cost | Impact |
    | :--- | :---: | :---: | :--- |
    | **Solar Panel** | ☀️ | $80 | High sustainability, zero pollution |
    | **Wind Turbine** | 💨 | $105 | Very high sustainability, clean power |
@@ -48,7 +48,7 @@ Play the game: akulsun.github.io/ecocity-builder
 
 ---
 
-## 🧰 Built With
+## Built With
 
 - **HTML5 & Vanilla JavaScript (ES6+)**: Zero framework overhead, ultra-fast performance.
 - **Vanilla CSS3**: Custom styles, responsive grid, and glassmorphic modal design.
@@ -57,6 +57,6 @@ Play the game: akulsun.github.io/ecocity-builder
 
 ---
 
-## 📄 License
+## License
 
 This project is open-source and available under the [MIT License](LICENSE).
